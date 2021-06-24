@@ -1,6 +1,7 @@
 <template>
 <div id="app">
     <div class="left">
+        
         <el-menu default-active="1" class="el-menu-vertical-demo" >
             
             <el-menu-item index="1">
@@ -23,6 +24,7 @@
         </el-menu>
     </div>
     <div class="right">
+        
         <router-view> </router-view>
     </div>
 
@@ -53,6 +55,10 @@ export default {
 </script>
 
 <style>
+*{
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
 .left {
     width: 200px;
     height: 100%;
