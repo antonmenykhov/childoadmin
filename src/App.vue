@@ -1,32 +1,69 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+<div id="app">
+    <div class="left">
+        <el-menu default-active="1" class="el-menu-vertical-demo" >
+            
+            <el-menu-item index="1">
+                <i class="el-icon-menu"></i>
+                <span>Главная</span>
+            </el-menu-item>
+            <el-menu-item index="2" @click="$router.push({path:'/courses'})">
+                <i class="el-icon-menu"></i>
+                <span>Курсы</span>
+            </el-menu-item>
+            <el-menu-item index="3">
+                <i class="el-icon-menu"></i>
+                <span>Преподаватели</span>
+            </el-menu-item>
+            <el-menu-item index="4">
+                <i class="el-icon-menu"></i>
+                <span>Пользователи</span>
+            </el-menu-item>
+            
+        </el-menu>
     </div>
-    <router-view/>
-  </div>
+    <div class="right">
+        <router-view> </router-view>
+    </div>
+
+</div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import axios from 'axios';
+import constants from './constants';
+export default {
+    name: 'app',
+    components: {
+
+    },
+    beforeMount() {
+      axios.get(constants.courses).then(
+        response => {this.$store.commit('setCourses', response.data)}
+      );
+      axios.get(constants.teachers).then(
+        response => {this.$store.commit('setTeachers', response.data)}
+      );
+      axios.get(constants.lessons).then(
+        response => {this.$store.commit('setLessons', response.data)}
+      )
+      
+    },
+}
+</script>
+
+<style>
+.left {
+    width: 200px;
+    height: 100%;
 }
 
-#nav {
-  padding: 30px;
+.right {
+    flex: 1;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+#app {
+    display: flex;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
 }
 </style>
