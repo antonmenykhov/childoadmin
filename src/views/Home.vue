@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     Это главная страница
+    <el-button @click="exit">Выйти</el-button>
   </div>
 </template>
 
@@ -12,6 +13,11 @@ export default {
   name: 'Home',
   components: {
     
-  }
+  },
+  methods: {
+    exit(){
+      this.$cookie.delete('token')
+    }
+  },
 }
 </script>

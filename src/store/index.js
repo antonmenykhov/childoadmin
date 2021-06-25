@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     courses: [],
     teachers: [],
-    lessons: []
+    lessons: [],
+    jwt: ''
   },
   mutations: {
     setCourses(state, it){
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     setLessons(state, it){
       state.lessons = it
     },
+    changeJwt(state, it){
+      state.jwt = it
+    }
   },
   actions: {
   },

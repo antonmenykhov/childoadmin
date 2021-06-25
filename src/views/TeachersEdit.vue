@@ -78,16 +78,25 @@ export default {
     },
     methods: {
         getData() {
-            axios.get(this.constants.teachers + this.id).then(response => {
+            axios.get(this.constants.teachers + this.id, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }}).then(response => {
                 this.data = response.data
             })
 
         },
         sendData() {
             if (this.id !== 'new') {
-                axios.put(this.constants.teachers + this.id, this.data)
+                axios.put(this.constants.teachers + this.id, this.data, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }})
             } else {
-                axios.post(this.constants.teachers, this.data)
+                axios.post(this.constants.teachers, this.data, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }})
             }
         },
          mainImageUpload() {
@@ -98,7 +107,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data',  Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data, 'Avatar', response.data[0])
 

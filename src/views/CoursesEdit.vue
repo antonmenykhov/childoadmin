@@ -44,19 +44,24 @@
                 <el-form-item label="Android">
                     <el-input autosize type="textarea" :rows="2" v-model="data.android"></el-input>
                 </el-form-item>
-                <el-form-item label="Bonuses">
-                    <div v-for="item,i in data.bonus" :key="i" class="bonus">
+                <el-form-item label="Бонусы">
+                    <el-form label-position="top" v-for="item,i in data.bonus" :key="i" class="bonus">
+                        <div class="name"><p>Бонус {{i+1}}</p> <el-button  v-on:click="deleteBonus(i)" class="deleteFeature">Удалить бонус</el-button></div>
+                        <el-form-item label="Файл">
                         <p v-if="item.file">{{item.file.name}}
                             <span @click="$set(data.bonus[i], 'file', null)" class="material-icons delete">
                                 delete
                             </span>
                         </p>
-                        <el-input v-model="item.name"></el-input>
+                        
                         <input v-if="!item.file" type="file" :id="'bonus'+i" v-on:change="bonusFileUpload(i)">
-                        <el-button v-on:click="deleteBonus(i)">Удалить</el-button>
+                        </el-form-item>
+                        <el-form-item label="Название бонуса">
+                        <el-input v-model="item.name"></el-input>
+                        </el-form-item>
 
-                    </div>
-                    <el-button @click="addBonus">Add</el-button>
+                    </el-form>
+                    <el-button @click="addBonus">Добавить бонус</el-button>
                 </el-form-item>
             </div>
         </el-form-item>
@@ -176,6 +181,7 @@
                             <el-option label="Взрослый стиль 7" value="gr-7"></el-option>
                             <el-option label="Взрослый стиль 8" value="gr-8"></el-option>
                             <el-option label="Взрослый стиль 9" value="gr-9"></el-option>
+                            <el-option label="Взрослый стиль 10" value="gr-10"></el-option>
                         </el-select>
                         <el-select v-model="item.styleChild" v-if="data.style == 'child'">
                             <el-option label="Детский стиль 1" value="ch-1"></el-option>
@@ -225,7 +231,7 @@ export default {
                 Name: '',
                 android: '',
                 apple: '',
-                bonuses: [],
+                bonus: [],
                 description: '',
                 fetures: [],
                 image: '',
@@ -244,13 +250,22 @@ export default {
     },
     methods: {
         getData() {
-            axios.get(this.constants.courses + this.id).then(response => {
+            axios.get(this.constants.courses + this.id, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }}).then(response => {
                 this.data = response.data
             })
-            axios.get(this.constants.teachers).then(response => {
+            
+
+        },
+        getTeachers(){
+            axios.get(this.constants.teachers, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }}).then(response => {
                 this.teachers = response.data
             })
-
         },
         addFeature() {
             this.data.fetures.push({
@@ -306,7 +321,7 @@ export default {
               Make the request to the POST /single-file URL
             */
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data.fetures[i], 'image', response.data[0])
 
@@ -328,7 +343,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data',Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data, 'image', response.data[0])
 
@@ -346,7 +361,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data.bonus[i], 'file', response.data[0])
 
@@ -364,7 +379,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data, 'toolsImage', response.data[0])
 
@@ -383,7 +398,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data' }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data.lessons[i], 'img', response.data[0])
 
@@ -394,9 +409,15 @@ export default {
         },
         sendData() {
             if (this.id !== 'new') {
-                axios.put(this.constants.courses + this.id, this.data)
+                axios.put(this.constants.courses + this.id, this.data, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }})
             } else {
-                axios.post(this.constants.courses, this.data)
+                axios.post(this.constants.courses, this.data, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }})
             }
         },
         deleteFeature(i) {
@@ -417,10 +438,31 @@ export default {
         if (this.id !== 'new') {
             this.getData()
         }
+        this.getTeachers()
     },
 }
 </script>
 
 <style lang="scss">
-
+.bonus{
+    display: flex;
+    position: relative;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    .name{
+        position: absolute;
+        background: cadetblue;
+        top: -30px;
+        height: 30px;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        padding: 0 10px;
+        border-radius: 5px;
+        .deleteFeature{
+            padding: 5px!important;
+        }
+    }
+}
 </style>

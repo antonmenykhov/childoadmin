@@ -41,11 +41,17 @@ export default {
     },
     methods: {
         getTeachers() {
-            axios.get(constants.teachers).then(
+            axios.get(constants.teachers, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }}).then(
                 response => { this.$store.commit('setTeachers', response.data) })
         },
         deleteTeacher(id) {
-            axios.delete(constants.teachers + id).then(() => {this.getTeachers(); document.getElementById('teacher'+id).style.display="none"})
+            axios.delete(constants.teachers + id, {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }}).then(() => {this.getTeachers(); document.getElementById('teacher'+id).style.display="none"})
         }
     },
 }

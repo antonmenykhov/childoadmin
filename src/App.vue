@@ -1,9 +1,9 @@
 <template>
 <div id="app">
-    <div class="left">
-        
-        <el-menu default-active="1" class="el-menu-vertical-demo" >
-            
+    <div class="left" v-if="hide">
+
+        <el-menu :default-active="active" class="el-menu-vertical-demo">
+
             <el-menu-item index="1" @click="$router.push({path: '/'})">
                 <i class="el-icon-menu"></i>
                 <span>Главная</span>
@@ -20,13 +20,24 @@
                 <i class="el-icon-menu"></i>
                 <span>Пользователи</span>
             </el-menu-item>
-            
+
         </el-menu>
     </div>
-    <div class="right">
-        
+    <div class="right" v-if="hide">
+
         <router-view> </router-view>
     </div>
+    <el-dialog :close-on-click-modal=false :visible.sync="dialog" width="300px">
+        <el-form>
+            <el-form-item label="Логин">
+                <el-input v-model="email"></el-input>
+            </el-form-item>
+            <el-form-item label="Пароль">
+                <el-input type="password" v-model="password"></el-input>
+            </el-form-item>
+            <el-button @click="auth">Войти</el-button>
+        </el-form>
+    </el-dialog>
 
 </div>
 </template>
@@ -39,21 +50,69 @@ export default {
     components: {
 
     },
-    beforeMount() {
-     
-      
-     
-      
+    data() {
+        return {
+            email: '',
+            password: '',
+            dialog: true,
+            hide: false,
+            active: 1
+
+        }
     },
-    
+    methods: {
+        auth() {
+            axios.post(constants.auth, {
+                identifier: this.email,
+                password: this.password,
+            }).then(response => {
+                if (response.status == 200) {
+                    this.$cookie.set('token', response.data.jwt, { expires: '6M' })
+                    this.$store.commit('changeJwt', response.data.jwt);
+                    this.$router.push({ path: '/courses' })
+                    this.dialog=false;
+                    this.hide=true
+                }
+            }).catch(error => {
+                // Handle error.
+                console.log('An error occurred:', error.response);
+                this.$notify.error({
+                    title: 'Ошибка',
+                    message: 'Неверный логин или пароль'
+                });
+
+            });
+        }
+    },
+    beforeMount() {
+
+        if (this.$cookie.get('token')) {
+            this.$store.commit('changeJwt', (this.$cookie.get('token')));
+            axios.get(constants.courses,  {
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.jwt}`
+                }
+            }).then(respone => {
+                if (respone.status == 200){
+                this.dialog=false
+                 this.hide=true
+                this.$router.push({ path: '/courses' })}
+            }).catch(error => {
+                console.log(error);
+            })
+
+        }
+    },
+
 }
 </script>
 
 <style lang="scss">
-*{
+* {
     font-family: Arial, Helvetica, sans-serif;
     box-sizing: border-box;
 }
+
 .left {
     width: 200px;
     height: 100%;
@@ -67,6 +126,7 @@ export default {
     display: flex;
 
 }
+
 .img {
     width: 200px;
     height: 100px;
