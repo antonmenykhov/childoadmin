@@ -8,6 +8,9 @@
 
             </el-select>
         </el-form-item>
+        <el-form-item label="Позиция на главной странице">
+            <el-input-number v-model="data.num"></el-input-number>
+        </el-form-item>
         <el-form-item label="Имя">
             <el-input v-model="data.Name"></el-input>
         </el-form-item>

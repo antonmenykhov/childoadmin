@@ -1,6 +1,10 @@
 <template>
 <div>
+  
     <el-form label-width="200px">
+          <el-form-item label="Номер курса">
+        <el-input-number v-model="data.num"></el-input-number>
+    </el-form-item>
         <el-form-item label="Обложка курса для главной">
             <input v-if="!data.image" type="file" id="mainImage" v-on:change="mainImageUpload()">
             <div :style="'background: url(\''+constants.url+data.image.formats.thumbnail.url+ '\') no-repeat center center / cover'" class="img" v-if="data.image">
@@ -170,6 +174,14 @@
                     <el-form-item label="Инструменты и материалы на урок">
                         <el-input autosize type="textarea" :rows="2" v-model="item.tools"></el-input>
                     </el-form-item>
+                    <el-form-item label="Цвет урока на странице курса">
+                        <el-select v-model="item.color"> 
+                             <el-option label="Оранжевый" value="orange"></el-option>
+                            <el-option label="Зеленый" value="green"></el-option>
+                            <el-option label="Розовый" value="pink"></el-option>
+                            <el-option label="Голубой" value="blue"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item label="Стиль урока">
                         <el-select v-model="item.styleGrow" v-if="data.style == 'grow'">
                             <el-option label="Взрослый стиль 1" value="gr-1"></el-option>
@@ -225,6 +237,7 @@ import constants from '../constants'
 export default {
     data() {
         return {
+            num: '',
             file: '',
             id: this.$route.params.id,
             data: {
@@ -303,6 +316,7 @@ export default {
                 styleChild: '',
                 styleGrow: '',
                 tools: '',
+                color: '',
                 __component: "features.lesson"
             })
         },
