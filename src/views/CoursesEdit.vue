@@ -121,7 +121,7 @@
                             <el-input v-model="item.name"></el-input>
                         </el-form-item>
 
-                        <el-form-item v-if="data.style == 'grow'" label="Длительность">
+                        <el-form-item  label="Длительность">
                             <el-input v-model="item.time"></el-input>
                         </el-form-item>
                     </div>
@@ -164,6 +164,9 @@
                     </el-form-item>
                     <el-form-item label="Видео">
                         <el-input v-model="item.Video"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Длительность видео">
+                        <el-input v-model="item.time"></el-input>
                     </el-form-item>
                     <el-form-item label="Краткое описание урока">
                         <el-input autosize type="textarea" :rows="2" v-model="item.smallDescription"></el-input>
@@ -316,6 +319,7 @@ export default {
                 styleChild: '',
                 styleGrow: '',
                 tools: '',
+                time: null,
                 color: '',
                 __component: "features.lesson"
             })
