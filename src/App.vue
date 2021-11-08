@@ -16,9 +16,13 @@
                 <i class="el-icon-menu"></i>
                 <span>Преподаватели</span>
             </el-menu-item>
-            <el-menu-item index="4">
+            <el-menu-item index="4"  @click="$router.push({path:'/users'})">
                 <i class="el-icon-menu"></i>
                 <span>Пользователи</span>
+            </el-menu-item>
+            <el-menu-item index="5"  @click="$router.push({path:'/promo'})">
+                <i class="el-icon-menu"></i>
+                <span>Промокоды</span>
             </el-menu-item>
 
         </el-menu>
@@ -56,7 +60,7 @@ export default {
             password: '',
             dialog: true,
             hide: false,
-            active: 1
+            active: "1"
 
         }
     },
@@ -69,7 +73,6 @@ export default {
                 if (response.status == 200) {
                     this.$cookie.set('token', response.data.jwt, { expires: '6M' })
                     this.$store.commit('changeJwt', response.data.jwt);
-                    this.$router.push({ path: '/courses' })
                     this.dialog=false;
                     this.hide=true
                 }

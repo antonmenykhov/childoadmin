@@ -1,10 +1,10 @@
 <template>
 <div>
-  
+
     <el-form label-width="200px">
-          <el-form-item label="Номер курса">
-        <el-input-number v-model="data.num"></el-input-number>
-    </el-form-item>
+        <el-form-item label="Номер курса">
+            <el-input-number v-model="data.num"></el-input-number>
+        </el-form-item>
         <el-form-item label="Обложка курса для главной">
             <input v-if="!data.image" type="file" id="mainImage" v-on:change="mainImageUpload()">
             <div :style="'background: url(\''+constants.url+data.image.formats.thumbnail.url+ '\') no-repeat center center / cover'" class="img" v-if="data.image">
@@ -50,18 +50,21 @@
                 </el-form-item>
                 <el-form-item label="Бонусы">
                     <el-form label-position="top" v-for="item,i in data.bonus" :key="i" class="bonus">
-                        <div class="name"><p>Бонус {{i+1}}</p> <el-button  v-on:click="deleteBonus(i)" class="deleteFeature">Удалить бонус</el-button></div>
+                        <div class="name">
+                            <p>Бонус {{i+1}}</p>
+                            <el-button v-on:click="deleteBonus(i)" class="deleteFeature">Удалить бонус</el-button>
+                        </div>
                         <el-form-item label="Файл">
-                        <p v-if="item.file">{{item.file.name}}
-                            <span @click="$set(data.bonus[i], 'file', null)" class="material-icons delete">
-                                delete
-                            </span>
-                        </p>
-                        
-                        <input v-if="!item.file" type="file" :id="'bonus'+i" v-on:change="bonusFileUpload(i)">
+                            <p v-if="item.file">{{item.file.name}}
+                                <span @click="$set(data.bonus[i], 'file', null)" class="material-icons delete">
+                                    delete
+                                </span>
+                            </p>
+
+                            <input v-if="!item.file" type="file" :id="'bonus'+i" v-on:change="bonusFileUpload(i)">
                         </el-form-item>
                         <el-form-item label="Название бонуса">
-                        <el-input v-model="item.name"></el-input>
+                            <el-input v-model="item.name"></el-input>
                         </el-form-item>
 
                     </el-form>
@@ -121,13 +124,19 @@
                             <el-input v-model="item.name"></el-input>
                         </el-form-item>
 
-                        <el-form-item  label="Длительность">
+                        <el-form-item label="Длительность">
                             <el-input v-model="item.time"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Количество уроков">
+                            <el-input-number v-model="item.lessonsNum"></el-input-number>
                         </el-form-item>
                     </div>
                     <div class="right">
                         <el-form-item label="Цена за тариф">
                             <el-input-number v-model="item.price"></el-input-number>
+                        </el-form-item>
+                         <el-form-item label="Старая цена">
+                            <el-input-number v-model="item.oldprice"></el-input-number>
                         </el-form-item>
                         <el-form-item v-if="data.style == 'grow'" label="Описание тарифа">
                             <el-input autosize type="textarea" :rows="2" v-model="item.description"></el-input>
@@ -178,8 +187,8 @@
                         <el-input autosize type="textarea" :rows="2" v-model="item.tools"></el-input>
                     </el-form-item>
                     <el-form-item label="Цвет урока на странице курса">
-                        <el-select v-model="item.color"> 
-                             <el-option label="Оранжевый" value="orange"></el-option>
+                        <el-select v-model="item.color">
+                            <el-option label="Оранжевый" value="orange"></el-option>
                             <el-option label="Зеленый" value="green"></el-option>
                             <el-option label="Розовый" value="pink"></el-option>
                             <el-option label="Голубой" value="blue"></el-option>
@@ -269,17 +278,18 @@ export default {
             axios.get(this.constants.courses + this.id, {
                 headers: {
                     Authorization: `Bearer ${this.$store.state.jwt}`
-                }}).then(response => {
+                }
+            }).then(response => {
                 this.data = response.data
             })
-            
 
         },
-        getTeachers(){
+        getTeachers() {
             axios.get(this.constants.teachers, {
                 headers: {
                     Authorization: `Bearer ${this.$store.state.jwt}`
-                }}).then(response => {
+                }
+            }).then(response => {
                 this.teachers = response.data
             })
         },
@@ -301,6 +311,8 @@ export default {
         addTarif() {
             this.data.prices.push({
                 price: 0,
+                oldprice:0,
+                lessonsNum: 1,
                 name: '',
                 pricePerM: 0,
                 description: '',
@@ -361,7 +373,7 @@ export default {
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post(constants.upload,
-                    formData, { headers: { 'Content-Type': 'multipart/form-data',Authorization: `Bearer ${this.$store.state.jwt}` }, }
+                    formData, { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.$store.state.jwt}` }, }
                 ).then(response => {
                     this.$set(this.data, 'image', response.data[0])
 
@@ -428,14 +440,16 @@ export default {
         sendData() {
             if (this.id !== 'new') {
                 axios.put(this.constants.courses + this.id, this.data, {
-                headers: {
-                    Authorization: `Bearer ${this.$store.state.jwt}`
-                }})
+                    headers: {
+                        Authorization: `Bearer ${this.$store.state.jwt}`
+                    }
+                })
             } else {
                 axios.post(this.constants.courses, this.data, {
-                headers: {
-                    Authorization: `Bearer ${this.$store.state.jwt}`
-                }})
+                    headers: {
+                        Authorization: `Bearer ${this.$store.state.jwt}`
+                    }
+                })
             }
         },
         deleteFeature(i) {
@@ -462,25 +476,29 @@ export default {
 </script>
 
 <style lang="scss">
-.bonus{
+.bonus {
     display: flex;
     position: relative;
     margin-top: 40px;
     margin-bottom: 10px;
-    .name{
-        position: absolute;
-        background: cadetblue;
-        top: -30px;
-        height: 30px;
-        width: 100%;
-        justify-content: space-between;
-        align-items: center;
-        display: flex;
-        padding: 0 10px;
-        border-radius: 5px;
-        .deleteFeature{
-            padding: 5px!important;
-        }
+    .name {
+    position: absolute;
+    background: cadetblue;
+    top: -30px;
+    height: 30px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    padding: 0 10px;
+    border-radius: 5px;
+
+    .deleteFeature {
+        padding: 5px !important;
     }
 }
+
+}
+
+
 </style>

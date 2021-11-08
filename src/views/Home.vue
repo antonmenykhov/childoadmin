@@ -17,6 +17,7 @@ export default {
   methods: {
     exit(){
       this.$cookie.delete('token')
+      this.$router.push({path: '/'})
     }
   },
 }
